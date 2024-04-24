@@ -10,6 +10,8 @@ python = "^3.12"
 pandas = "^2.2.2"
 folium = "^0.16.0"
 geopandas = "^0.14.3"
+fastapi = "^0.110.2"
+uvicorn = {extras = ["standard"], version = "^0.29.0"}
 
 
 [tool.poetry.group.dev.dependencies]
