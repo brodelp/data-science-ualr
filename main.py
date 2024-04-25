@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 import json
 
 from src.map_gen import state_tornado_path_map
@@ -7,6 +9,8 @@ from src.data_filtering import create_df
 from src.helpers import get_tornado_data_path, get_usa_geojson_path
 
 app = FastAPI()
+
+templates = Jinja2Templates(directory="templates")
 
 data=create_df(data_path='data/1950-2019_all_tornadoes.csv')
 geojson_path = 'data/us_states.json'
@@ -17,11 +21,25 @@ with open('data/us_state_capitals.json') as f:
     for key, value in cap.items():
         capital_dict[key] = (float(value['lat']), float(value['long']))
 
-@app.get("/")
+@app.get("/api/fullscreen")
 async def fullscreen():
     """Simple example of a fullscreen map."""
     m = state_tornado_path_map(state='AR', year=2001, data=data, geojson_path=geojson_path, capital_locations=capital_dict)
     return HTMLResponse(m.get_root().render())
+
+@app.get("/api/iframe", response_class=HTMLResponse)
+async def iframe(request: Request):
+    """Simple example of a fullscreen map."""
+    m = state_tornado_path_map(state='AR', year=2001, data=data, geojson_path=geojson_path, capital_locations=capital_dict)
+
+    # set the iframe width and height
+    m.get_root().width = "800px"
+    m.get_root().height = "600px"
+    iframe = m.get_root()._repr_html_()
+
+    return templates.TemplateResponse(
+        request=request, name='iframe.html', context={"iframe": iframe}
+    )
 
 @app.get("/items/")
 async def read_items():
