@@ -24,7 +24,7 @@ def state_tornado_path_map(state: str, year: int, data: pd.DataFrame, geojson_pa
         popup_contents = folium.Html(html.format(date=df.loc[i, 'date'],
                                                  t_start=start, 
                                                  t_end=end, 
-                                                 t_mag=df.loc[i, 'mag']),script = True)
+                                                 t_mag=df.loc[i, 'mag']),script = True, width='80%', height='80%')
         popup = folium.Popup(popup_contents, max_width=1500)
         if ((end != [0.0,0.0]) & (end != start)):
             folium.Marker(location=start,
