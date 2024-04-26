@@ -28,9 +28,9 @@ async def fullscreen():
     return HTMLResponse(m.get_root().render())
 
 @app.get("/api/iframe", response_class=HTMLResponse)
-async def iframe(request: Request):
+async def iframe(request: Request, state: str = 'TX', year: int = 2001):
     """Simple example of a fullscreen map."""
-    m = state_tornado_path_map(state='AR', year=2001, data=data, geojson_path=geojson_path, capital_locations=capital_dict)
+    m = state_tornado_path_map(state=state, year=year, data=data, geojson_path=geojson_path, capital_locations=capital_dict)
 
     # set the iframe width and height
     m.get_root().width = "800px"
