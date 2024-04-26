@@ -23,9 +23,10 @@ function App() {
   // }
 
   return (
-    <div className="App">
-      <h3>Iframes in React</h3>
-      <iframe src={iframeURL}></iframe>
+    <div className="h-full w-full">
+      <iframe 
+        src={iframeURL}>
+      </iframe>
       {/* <button
         onClick={handleGetMap}
       >
