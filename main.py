@@ -50,10 +50,10 @@ async def fullscreen():
     return HTMLResponse(m.get_root().render())
 
 @app.get("/api/map/country/iframe")
-async def country_map(request: Request, year: int):
+async def country_map(request: Request, year: int = 2001):
     tornado_df = create_tornado_count(data=data, year=year)
     merged_df = create_merged_data(tornado_count_df=tornado_df, geo_df=geo_data)
-    m = tornado_choropleth_map(geojson_path=geojson_path, geo_df=merged_df)
+    m = tornado_choropleth_map(geojson_path=geojson_path, geo_df=merged_df, year=year)
 
     # set the iframe width and height
     m.get_root().width = "800px"
