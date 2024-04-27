@@ -2,6 +2,9 @@ import folium
 from folium.plugins import AntPath
 import pandas as pd
 
+import geopandas as gpd
+import folium.features
+
 def state_tornado_path_map(state: str, year: int, data: pd.DataFrame, geojson_path: str, capital_locations: dict):
 
     map = folium.Map(location=capital_locations[state], tiles="cartodbpositronnolabels", zoom_start=5, max_bounds=True)
@@ -49,4 +52,52 @@ def state_tornado_path_map(state: str, year: int, data: pd.DataFrame, geojson_pa
     folium.TileLayer("cartodbpositrononlylabels", pane="labels").add_to(map)
     folium.LayerControl().add_to(map)
 
+    return map
+
+def tornado_choropleth_map(geojson_path: str, geo_df: gpd.GeoDataFrame, year: int):
+    map = folium.Map(
+        location=[39.8283, -98.5795],
+        tiles="cartodbpositronnolabels",
+        zoom_start=5,
+        max_bounds=True)
+    custom_scale = (geo_df['count'].quantile((0,0.2,0.4,0.6,0.8,1))).tolist()
+    folium.Choropleth(
+                geo_data=geojson_path,
+                data=geo_df,
+                columns=['id', 'count'],
+                key_on='feature.id',
+                threshold_scale=custom_scale,
+                fill_color='YlOrRd',
+                nan_fill_color="White",
+                fill_opacity=0.7,
+                line_opacity=0.2,
+                legend_name=f'Tornados in {year}',
+                highlight=True,
+                line_color='black').add_to(map) 
+
+    # Add Customized Tooltips to the map
+    folium.features.GeoJson(
+                        data=geo_df,
+                        name=f'Tornados in {year}',
+                        smooth_factor=2,
+                        style_function=lambda x: {'color':'black','fillColor':'transparent','weight':0.5},
+                        tooltip=folium.features.GeoJsonTooltip(
+                            fields=['name',
+                                    'count',
+                                ],
+                            aliases=["State",
+                                    'Tornado Count',
+                                    ], 
+                            localize=True,
+                            sticky=False,
+                            labels=True,
+                            style="""
+                                background-color: #F0EFEF;
+                                border: 2px solid black;
+                                border-radius: 3px;
+                                box-shadow: 3px;
+                            """,
+                            max_width=800,),
+                                highlight_function=lambda x: {'weight':3,'fillColor':'grey'},
+                            ).add_to(map)   
     return map
