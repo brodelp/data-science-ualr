@@ -64,20 +64,27 @@ function get_year_range() {
 
 function App() {
   
-  const [iframeURL, setIframeURL] = useState('/api/map/state/iframe')
+  const [mapType, setMapType] = useState('country')
+  const [iframeURL, setIframeURL] = useState('/api/map/country/iframe')
   
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+
+
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const state = formData.get('state') as string
     const year = formData.get('year')
-    console.log(state)
-    console.log(year)
-    
-    const iframe_url = `/api/map/state/iframe?state=${state}&year=${year}`
-    console.log(iframe_url)
 
-    setIframeURL(iframe_url)
+    if (mapType == 'state') {
+      const state = formData.get('state') as string
+      const iframe_url = `/api/map/state/iframe?state=${state}&year=${year}`
+      setIframeURL(iframe_url)
+      console.log(iframe_url)
+
+    } else if (mapType == 'country') {
+      const iframe_url = `/api/map/country/iframe?&year=${year}`
+      setIframeURL(iframe_url)
+      console.log(iframe_url)
+    }
   };
 
   // const handleGetMap = async () => {
@@ -100,7 +107,11 @@ function App() {
         {/* <IframeView url={iframeURL}/> */}
       </div>
       <div>
-        <FilterForm onSubmit={handleSubmit}/>
+        <select onChange={(e)=> setMapType(e.target.value)}>
+          <option value='country'>Country Map</option>
+          <option value='state'>State Map</option>
+        </select>
+        <FilterForm mapType={mapType} onSubmit={handleSubmit}/>
       </div>
     </div>
   )
@@ -116,23 +127,38 @@ function App() {
 //   )
 // }
 
-const FilterForm = (props: { onSubmit: React.FormEventHandler<HTMLFormElement> | undefined }) => {
+const FilterForm = (props: { mapType: string, onSubmit: React.FormEventHandler<HTMLFormElement> | undefined }) => {
   const years = get_year_range()
-  return (
-    <form onSubmit={props.onSubmit}>
-      <select name="state">
-        {Object.entries(abbreviation_to_name).map(([key, value]) => 
-            <option value={key}>{value}</option>
-        )}
-      </select>
-      <select name="year">
-        {years.map(year =>
-          <option key={year} value={year}>{year}</option>
-        )}
-      </select>
-      <button type="submit">Search</button>
-    </form>
-  )
+
+  if (props.mapType == 'state') {
+    return (
+      <form onSubmit={props.onSubmit}>
+        <select name="state">
+          {Object.entries(abbreviation_to_name).map(([key, value]) => 
+              <option value={key}>{value}</option>
+          )}
+        </select>
+        <select name="year">
+          {years.map(year =>
+            <option key={year} value={year}>{year}</option>
+          )}
+        </select>
+        <button type="submit">Search</button>
+      </form>
+    )
+  }
+  else if (props.mapType == 'country') {
+    return (
+      <form onSubmit={props.onSubmit}>
+        <select name="year">
+          {years.map(year =>
+            <option key={year} value={year}>{year}</option>
+          )}
+        </select>
+        <button type="submit">Search</button>
+      </form>
+    )
+  }
 }
 
 export default App
