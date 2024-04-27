@@ -22,15 +22,14 @@ with open('data/us_state_capitals.json') as f:
     for key, value in cap.items():
         capital_dict[key] = (float(value['lat']), float(value['long']))
 
-@app.get("/api/fullscreen")
+@app.get("/api/map/state/fullscreen")
 async def fullscreen():
     """Simple example of a fullscreen map."""
     m = state_tornado_path_map(state='AR', year=2001, data=data, geojson_path=geojson_path, capital_locations=capital_dict)
     return HTMLResponse(m.get_root().render())
 
-@app.get("/api/iframe", response_class=HTMLResponse)
+@app.get("/api/map/state/iframe", response_class=HTMLResponse)
 async def iframe(request: Request, state: str = 'TX', year: int = 2001):
-    """Simple example of a fullscreen map."""
     m = state_tornado_path_map(state=state, year=year, data=data, geojson_path=geojson_path, capital_locations=capital_dict)
 
     # set the iframe width and height

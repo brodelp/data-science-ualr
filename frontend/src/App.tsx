@@ -64,7 +64,7 @@ function get_year_range() {
 
 function App() {
   
-  const [iframeURL, setIframeURL] = useState('/api/iframe')
+  const [iframeURL, setIframeURL] = useState('/api/map/state/iframe')
   
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -74,7 +74,7 @@ function App() {
     console.log(state)
     console.log(year)
     
-    const iframe_url = `/api/iframe?state=${state}&year=${year}`
+    const iframe_url = `/api/map/state/iframe?state=${state}&year=${year}`
     console.log(iframe_url)
 
     setIframeURL(iframe_url)
